@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full">
-    <ScrollArea class="flex-1 px-4 py-4">
+    <ScrollArea ref="scrollArea" class="flex-1 px-4 py-4">
       <!-- Empty State -->
       <div
         v-if="messages.length === 0"
@@ -51,6 +51,8 @@
             <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 300ms" />
           </div>
         </div>
+
+        <div ref="sentinel" />
       </div>
     </ScrollArea>
 
@@ -77,6 +79,16 @@ import { Send, MessageCircleOff } from '@lucide/vue'
 const messages = ref<{ role: 'user' | 'bot'; text: string }[]>([])
 const input = ref('')
 const isLoading = ref(false)
+const sentinel = ref<HTMLElement | null>(null)
+
+function scrollToBottom() {
+  nextTick(() => {
+    sentinel.value?.scrollIntoView({ behavior: 'smooth' })
+  })
+}
+
+watch(messages, scrollToBottom, { deep: true })
+watch(isLoading, scrollToBottom)
 
 function sendMessage() {
   const text = input.value.trim()
