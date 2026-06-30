@@ -1,37 +1,82 @@
 <template>
-  <div class="chatbox">
-    <div class="messages" ref="messagesContainer">
+  <div class="flex flex-col h-full">
+    <ScrollArea class="flex-1 px-4 py-4">
+      <!-- Empty State -->
       <div
-        v-for="(msg, idx) in messages"
-        :key="idx"
-        :class="['bubble', msg.role]"
+        v-if="messages.length === 0"
+        class="h-full flex flex-col items-center justify-center text-muted-foreground gap-2"
       >
-        {{ msg.text }}
+        <MessageCircleOff class="size-10" />
+        <p class="text-sm">Start a conversation...</p>
       </div>
-      <div v-if="isLoading" class="bubble bot typing">
-        Bot is typing...
+
+      <!-- Messages -->
+      <div v-else class="space-y-4">
+        <div
+          v-for="(msg, idx) in messages"
+          :key="idx"
+          :class="['flex gap-2', msg.role === 'user' ? 'justify-end' : 'justify-start']"
+        >
+          <!-- Bot Avatar -->
+          <Avatar v-if="msg.role === 'bot'" size="sm" class="mt-1">
+            <AvatarFallback class="text-xs">B</AvatarFallback>
+          </Avatar>
+
+          <!-- Bubble -->
+          <div
+            :class="[
+              'max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-relaxed',
+              msg.role === 'user'
+                ? 'bg-primary text-primary-foreground rounded-br-sm'
+                : 'bg-muted text-foreground rounded-bl-sm'
+            ]"
+          >
+            {{ msg.text }}
+          </div>
+
+          <!-- User Avatar -->
+          <Avatar v-if="msg.role === 'user'" size="sm" class="mt-1">
+            <AvatarFallback class="text-xs bg-primary text-primary-foreground">U</AvatarFallback>
+          </Avatar>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div v-if="isLoading" class="flex gap-2 justify-start">
+          <Avatar size="sm" class="mt-1">
+            <AvatarFallback class="text-xs">B</AvatarFallback>
+          </Avatar>
+          <div class="bg-muted rounded-2xl rounded-bl-sm px-4 py-2 flex items-center gap-1">
+            <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 0ms" />
+            <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 150ms" />
+            <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 300ms" />
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="input-row">
-      <input
-        v-model="input"
-        type="text"
-        placeholder="Type a message..."
-        @keyup.enter="sendMessage"
-        :disabled="isLoading"
-      />
-      <button @click="sendMessage" :disabled="isLoading || !input.trim()">
-        Send
-      </button>
+    </ScrollArea>
+
+    <!-- Input Row -->
+    <div class="border-t p-4">
+      <form class="flex gap-2" @submit.prevent="sendMessage">
+        <Input
+          v-model="input"
+          placeholder="Type a message..."
+          :disabled="isLoading"
+          class="flex-1"
+        />
+        <Button type="submit" :disabled="!input.trim() || isLoading">
+          <Send class="size-4" />
+        </Button>
+      </form>
     </div>
   </div>
 </template>
 
-<script setup>
-const messages = ref([])
+<script setup lang="ts">
+import { Send, MessageCircleOff } from '@lucide/vue'
+
+const messages = ref<{ role: 'user' | 'bot'; text: string }[]>([])
 const input = ref('')
 const isLoading = ref(false)
-const messagesContainer = ref(null)
 
 function sendMessage() {
   const text = input.value.trim()
@@ -41,101 +86,9 @@ function sendMessage() {
   input.value = ''
   isLoading.value = true
 
-  scrollToBottom()
-
   setTimeout(() => {
     messages.value.push({ role: 'bot', text: `You said: ${text}` })
     isLoading.value = false
-    nextTick(() => scrollToBottom())
   }, 1500)
 }
-
-function scrollToBottom() {
-  nextTick(() => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-    }
-  })
-}
 </script>
-
-<style scoped>
-.chatbox {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.bubble {
-  max-width: 75%;
-  padding: 0.5rem 1rem;
-  border-radius: 16px;
-  word-wrap: break-word;
-}
-
-.bubble.user {
-  align-self: flex-end;
-  background: #007aff;
-  color: #fff;
-  border-bottom-right-radius: 4px;
-}
-
-.bubble.bot {
-  align-self: flex-start;
-  background: #e9e9eb;
-  color: #000;
-  border-bottom-left-radius: 4px;
-}
-
-.bubble.typing {
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.input-row {
-  display: flex;
-  border-top: 1px solid #ccc;
-  padding: 0.5rem;
-  gap: 0.5rem;
-}
-
-.input-row input {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  outline: none;
-  font-size: 1rem;
-}
-
-.input-row input:disabled {
-  background: #f5f5f5;
-}
-
-.input-row button {
-  padding: 0.5rem 1.25rem;
-  border: none;
-  border-radius: 20px;
-  background: #007aff;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.input-row button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

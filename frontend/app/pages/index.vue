@@ -1,23 +1,12 @@
 <template>
-  <div class="page">
-    <h1>Chatbot</h1>
-    <ChatBox />
+  <div class="min-h-screen bg-background flex items-center justify-center p-4">
+    <Card class="w-full max-w-lg h-[90vh] flex flex-col">
+      <CardHeader class="border-b px-4 py-3">
+        <CardTitle class="text-lg">Chatbot</CardTitle>
+      </CardHeader>
+      <CardContent class="flex-1 p-0 overflow-hidden">
+        <ChatBox />
+      </CardContent>
+    </Card>
   </div>
 </template>
-
-<style scoped>
-.page {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-h1 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-</style>
