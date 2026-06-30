@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full">
-    <ScrollArea ref="scrollArea" class="flex-1 px-4 py-4">
+    <ScrollArea class="flex-1 px-4 py-4">
       <!-- Empty State -->
       <div
         v-if="messages.length === 0"
@@ -15,14 +15,8 @@
         <div
           v-for="(msg, idx) in messages"
           :key="idx"
-          :class="['flex gap-2', msg.role === 'user' ? 'justify-end' : 'justify-start']"
+          :class="['flex', msg.role === 'user' ? 'justify-end' : 'justify-start']"
         >
-          <!-- Bot Avatar -->
-          <Avatar v-if="msg.role === 'bot'" size="sm" class="mt-1">
-            <AvatarFallback class="text-xs">B</AvatarFallback>
-          </Avatar>
-
-          <!-- Bubble -->
           <div
             :class="[
               'max-w-[75%] rounded-2xl px-3 py-2 text-sm leading-relaxed',
@@ -33,18 +27,10 @@
           >
             {{ msg.text }}
           </div>
-
-          <!-- User Avatar -->
-          <Avatar v-if="msg.role === 'user'" size="sm" class="mt-1">
-            <AvatarFallback class="text-xs bg-primary text-primary-foreground">U</AvatarFallback>
-          </Avatar>
         </div>
 
         <!-- Typing Indicator -->
-        <div v-if="isLoading" class="flex gap-2 justify-start">
-          <Avatar size="sm" class="mt-1">
-            <AvatarFallback class="text-xs">B</AvatarFallback>
-          </Avatar>
+        <div v-if="isLoading" class="flex justify-start">
           <div class="bg-muted rounded-2xl rounded-bl-sm px-4 py-2 flex items-center gap-1">
             <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 0ms" />
             <span class="size-1.5 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 150ms" />
@@ -58,17 +44,22 @@
 
     <!-- Input Row -->
     <div class="border-t p-4">
-      <form class="flex gap-2" @submit.prevent="sendMessage">
-        <Input
+      <div class="flex gap-2">
+        <input
           v-model="input"
           placeholder="Type a message..."
           :disabled="isLoading"
-          class="flex-1"
+          class="flex-1 h-8 rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm"
+          @keyup.enter="sendMessage"
         />
-        <Button type="submit" :disabled="!input.trim() || isLoading">
+        <button
+          @click="sendMessage"
+          :disabled="!input.trim() || isLoading"
+          class="inline-flex items-center justify-center h-8 px-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50 disabled:pointer-events-none"
+        >
           <Send class="size-4" />
-        </Button>
-      </form>
+        </button>
+      </div>
     </div>
   </div>
 </template>
