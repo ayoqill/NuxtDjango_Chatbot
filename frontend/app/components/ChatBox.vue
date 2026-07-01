@@ -81,7 +81,7 @@ function scrollToBottom() {
 watch(messages, scrollToBottom, { deep: true })
 watch(isLoading, scrollToBottom)
 
-function sendMessage() {
+async function sendMessage() {
   const text = input.value.trim()
   if (!text || isLoading.value) return
 
@@ -89,9 +89,25 @@ function sendMessage() {
   input.value = ''
   isLoading.value = true
 
-  setTimeout(() => {
-    messages.value.push({ role: 'bot', text: `You said: ${text}` })
+  try {
+    const response = await $fetch<{ reply: string }>('http://127.0.0.1:8000/api/chat/', {
+      method: 'POST',
+      body: {
+        message: text,
+      },
+    })
+
+    messages.value.push({
+      role: 'bot',
+      text: response.reply,
+    })
+  } catch (error) {
+    messages.value.push({
+      role: 'bot',
+      text: 'Failed to connect to backend.',
+    })
+  } finally {
     isLoading.value = false
-  }, 1500)
+  }
 }
 </script>
