@@ -90,7 +90,7 @@ async function sendMessage() {
   isLoading.value = true
 
   try {
-    const response = await $fetch<{ reply: string }>('http://127.0.0.1:8000/api/chat/', {
+    const response = await $fetch<{ reply: string }>('http://127.0.0.1:8000/api/chat/', {       /* here is the fetch happens*/
       method: 'POST',
       body: {
         message: text,
