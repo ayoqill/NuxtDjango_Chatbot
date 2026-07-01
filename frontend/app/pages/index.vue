@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-background flex items-center justify-center p-4">
-    <Card class="w-full max-w-lg h-[90vh] flex flex-col">
+    <Card class="w-full max-w-lg h-[90vh] flex flex-col bg-slate-1 shadow-lg rounded-2xl">
       <CardHeader class="border-b px-4 py-3 flex items-center justify-center gap-2">
         <CardTitle class="text-xl font-semibold tracking-tight">Fake Chatbot</CardTitle>
       </CardHeader>
