@@ -1,3 +1,5 @@
+from re import search
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import FAQResponse
@@ -28,6 +30,13 @@ def faq_list_api(request):
     category = request.query_params.get("category")
     if category:
         faqs = faqs.filter(category__iexact=category)  # Filters FAQs by category
-        
+
+    if not faqs.exists():
+        return Response({"message": "No FAQs found for the specified category."}, status=404)
+    
+    search = request.query_params.get("search")
+    if search:
+        faqs = faqs.filter(question__icontains=search)  # Filters FAQs by search term
+
     serializer = FAQResponseSerializer(faqs, many=True)     # Converts many database rows into JSON
     return Response(serializer.data)
