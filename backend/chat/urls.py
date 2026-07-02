@@ -4,7 +4,7 @@ from .views import chat_api, faq_list_api, register_api
 urlpatterns = [
     path("chat/", chat_api),
     path("faqs/", faq_list_api),
-    path("register/", register_api),
+    path("signup/", register_api),
 ]
 
 # means now we have 3 endpoints:
