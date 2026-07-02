@@ -3,7 +3,7 @@ from re import search
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import FAQResponse
-from .serializers import FAQResponseSerializer
+from .serializers import FAQResponseSerializer, RegisterSerializer
 
 
 @api_view(["POST"])
@@ -44,3 +44,11 @@ def faq_list_api(request):
 
     serializer = FAQResponseSerializer(faqs, many=True)     # Converts many database rows into JSON
     return Response(serializer.data)
+
+@api_view(["POST"])
+def register_api(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({"message": "User registered successfully."}, status=201)
+    return Response(serializer.errors, status=400)
