@@ -38,7 +38,7 @@ def faq_list_api(request):
     if search:
         faqs = faqs.filter(question__icontains=search)  # Filters FAQs by search term
 
-    ordering = request.query_params.get("ordering")
+    ordering = request.query_params.get("ordering") or request.query_params.get("sort")
     if ordering:
         faqs = faqs.order_by(ordering)  # Orders FAQs by specified field
 
