@@ -134,3 +134,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# Use JWT token to check who the user is (authentication)
+
+# Later when Nuxt sends a request, it will send token like this:
+
+    # Authorization: Bearer <access_token>
