@@ -38,5 +38,9 @@ def faq_list_api(request):
     if search:
         faqs = faqs.filter(question__icontains=search)  # Filters FAQs by search term
 
+    ordering = request.query_params.get("ordering")
+    if ordering:
+        faqs = faqs.order_by(ordering)  # Orders FAQs by specified field
+
     serializer = FAQResponseSerializer(faqs, many=True)     # Converts many database rows into JSON
     return Response(serializer.data)
