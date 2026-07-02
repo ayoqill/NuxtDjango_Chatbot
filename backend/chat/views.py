@@ -24,5 +24,10 @@ def chat_api(request):
 @api_view(["GET"])
 def faq_list_api(request):
     faqs = FAQResponse.objects.all()    # Gets all FAQ records from PostgreSQL
+
+    category = request.query_params.get("category")
+    if category:
+        faqs = faqs.filter(category__iexact=category)  # Filters FAQs by category
+        
     serializer = FAQResponseSerializer(faqs, many=True)     # Converts many database rows into JSON
     return Response(serializer.data)
